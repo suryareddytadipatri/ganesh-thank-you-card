@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="theme-color" content="#A13D2B" />
+<title>TMC Ganesh Union — Thank You Card Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Yatra+One&family=Poppins:wght@400;500;600;700&display=swap');
+
+  :root {
+    --sindoor: #A13D2B;
+    --gold: #E7A93D;
+    --cream: #FFF6E7;
+    --ink: #3B241D;
+    --green: #2F5233;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .page {
+    width: 100%;
+    max-width: 420px;
+    padding: 24px 18px 40px;
+  }
+
+  .header { text-align: center; margin-bottom: 22px; }
+  .header .om { font-size: 34px; }
+  .header h1 {
+    font-family: 'Yatra One', serif;
+    font-size: 21px;
+    color: var(--sindoor);
+    margin: 6px 0 2px;
+  }
+  .header p { font-size: 12.5px; color: #8A7A6D; margin: 0; }
+
+  .form-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+  .field { margin-bottom: 16px; }
+  input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #E7D8C2;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    background: #FFFDF9;
+    color: var(--ink);
+    min-height: 48px;
+  }
+  input:focus { outline: none; border-color: var(--sindoor); }
+
+  .generate-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 50px;
+  }
+  .generate-btn:active { transform: scale(0.98); }
+
+  .error-msg {
+    color: var(--sindoor);
+    font-size: 13px;
+    margin-top: 10px;
+    text-align: center;
+    display: none;
+  }
+
+  /* ---- Thank-you card ---- */
+  .card-wrap { margin-top: 22px; display: none; }
+  .thankyou-card {
+    background: linear-gradient(160deg, #fff, #FFF9EF);
+    border: 1px solid #F0DFC4;
+    border-radius: 22px;
+    padding: 30px 24px;
+    text-align: center;
+  }
+  .thankyou-card .om { font-size: 40px; }
+  .thankyou-card h2 {
+    font-family: 'Yatra One', serif;
+    color: var(--sindoor);
+    margin: 8px 0 2px;
+    font-size: 24px;
+  }
+  .ty-org {
+    font-family: 'Yatra One', serif;
+    font-size: 15px;
+    color: var(--gold);
+    background: var(--sindoor);
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .ty-details {
+    background: #FBF1E1;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    text-align: left;
+  }
+  .ty-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px dashed #EEDFC4;
+    font-size: 14px;
+  }
+  .ty-row:last-child { border-bottom: none; }
+  .ty-row span { color: #8A7A6D; }
+  .ty-row b { color: var(--ink); }
+  .thankyou-card p { font-size: 13.5px; color: #5A443C; line-height: 1.6; margin: 0 0 4px; }
+  .ty-quote {
+    font-size: 12.5px;
+    color: var(--sindoor);
+    font-style: italic;
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+  .ty-credit { margin-top: 16px; font-size: 10.5px; color: #9A8A7C; font-style: italic; }
+
+  .actions { display: flex; gap: 10px; margin-top: 16px; }
+  .btn {
+    flex: 1;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .btn-download { background: var(--green); color: #fff; }
+  .btn-new { background: #FBF1E1; color: var(--ink); border: 1px solid #F0DFC4; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="header">
+    <div class="om">🕉️</div>
+    <h1>Thank You Card Generator</h1>
+    <p>TMC Ganesh Union &middot; Cash Collection</p>
+  </div>
+
+  <div class="form-card" id="formCard">
+    <form id="cardForm">
+      <div class="field">
+        <label for="name">Donor Name</label>
+        <input type="text" id="name" placeholder="e.g. Ramesh Kumar" required />
+      </div>
+      <div class="field">
+        <label for="phone">Mobile Number</label>
+        <input type="tel" inputmode="numeric" id="phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" required />
+      </div>
+      <div class="field">
+        <label for="amount">Amount Received (₹)</label>
+        <input type="number" inputmode="numeric" id="amount" placeholder="e.g. 500" min="1" required />
+      </div>
+      <button type="submit" class="generate-btn">🙏 Generate Thank-You Card</button>
+      <div class="error-msg" id="errorMsg">Please fill in all fields correctly.</div>
+    </form>
+  </div>
+
+  <div class="card-wrap" id="cardWrap">
+    <div class="thankyou-card" id="captureArea">
+      <div class="om">🙏</div>
+      <h2>Thank You!</h2>
+      <div class="ty-org">TMC Ganesh Union</div>
+      <div class="ty-details">
+        <div class="ty-row"><span>Donor</span><b id="tyName">—</b></div>
+        <div class="ty-row"><span>Amount</span><b id="tyAmount">—</b></div>
+        <div class="ty-row"><span>Mobile</span><b id="tyMobile">—</b></div>
+        <div class="ty-row"><span>Date</span><b id="tyDate">—</b></div>
+      </div>
+      <p>Ganapati Bappa Morya! Your contribution has been received with gratitude.</p>
+      <div class="ty-quote">"Wherever there is devotion, there Ganesha removes every obstacle."</div>
+      <div class="ty-credit">Created by $urya Reddy</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-download" id="downloadBtn">⬇️ Download Card</button>
+      <button class="btn btn-new" id="newBtn">➕ New Card</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById("cardForm");
+  const formCard = document.getElementById("formCard");
+  const cardWrap = document.getElementById("cardWrap");
+  const errorMsg = document.getElementById("errorMsg");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const amount = document.getElementById("amount").value.trim();
+
+    if (!name || !phone || !amount || Number(amount) <= 0) {
+      errorMsg.style.display = "block";
+      return;
+    }
+    errorMsg.style.display = "none";
+
+    document.getElementById("tyName").textContent = name;
+    document.getElementById("tyAmount").textContent = `₹${amount}`;
+    document.getElementById("tyMobile").textContent = phone;
+    document.getElementById("tyDate").textContent = new Date().toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+    formCard.style.display = "none";
+    cardWrap.style.display = "block";
+
+    const downloadBtn = document.getElementById("downloadBtn");
+    downloadBtn.disabled = false;
+    downloadBtn.textContent = "⬇️ Download Card";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("downloadBtn").addEventListener("click", () => {
+    const btn = document.getElementById("downloadBtn");
+    const card = document.getElementById("captureArea");
+    const nameForFile = document.getElementById("tyName").textContent.replace(/\s+/g, "_");
+    html2canvas(card, { backgroundColor: "#ffffff", scale: 2 }).then((canvas) => {
+      const link = document.createElement("a");
+      link.download = `TMC_Ganesh_Union_Thank_You_${nameForFile}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      btn.disabled = true;
+      btn.textContent = "✅ Downloaded";
+    });
+  });
+
+  document.getElementById("newBtn").addEventListener("click", () => {
+    form.reset();
+    cardWrap.style.display = "none";
+    formCard.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+
+</body>
+</html>
